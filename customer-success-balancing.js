@@ -15,6 +15,31 @@ function customerSuccessBalancing(
    * ===============================================
    */
 
+  const MAX_AMOUNT_CUSTOMER_SUCCESS = 1000;
+  const MAX_AMOUNT_CLIENTS = 1000000;
+
+  if(customerSuccess.length > MAX_AMOUNT_CUSTOMER_SUCCESS) {
+    throw new Error('Exceeded maximum number of customers!')
+  }
+
+  if(customerSuccess.length > MAX_AMOUNT_CLIENTS) {
+    throw new Error('Exceeded maximum number of clients!')
+  }
+
+  // verify ids and levels of customers success
+  const customersSuccessExceeded = customerSuccess.find((assignmentSuccessCostumer) => (assignmentSuccessCostumer.score > 10000 || assignmentSuccessCostumer.score < 0) || ((assignmentSuccessCostumer.id > 1000 || assignmentSuccessCostumer.id < 0)))
+
+  if(customersSuccessExceeded) {
+    throw new Error('Exceeded maximum number of id or level of customers success!')
+  }
+
+ // verify ids and levels of customers success
+  const customersExceeded = customerSuccess.find((assignmentSuccessCostumer) => (assignmentSuccessCostumer.score > 100000 || assignmentSuccessCostumer.score < 0) || ((assignmentSuccessCostumer.id > 1000000 || assignmentSuccessCostumer.id < 0)))
+
+  if(customersExceeded) {
+    throw new Error('Exceeded maximum number of id or level of customers!')
+  }
+
   // First: Remove customerSuccess away
   const idsAwayToRemove = new Set(customerSuccessAway)
 
