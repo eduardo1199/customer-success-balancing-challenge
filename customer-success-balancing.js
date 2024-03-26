@@ -15,8 +15,18 @@ function customerSuccessBalancing(
    * ===============================================
    */
 
+  function isValidData(data, maxId, maxScore) {
+    return data.some((item) => item.score > maxScore || item.score < 0 || item.id > maxId || item.id < 0)
+  }
+
   const MAX_AMOUNT_CUSTOMER_SUCCESS = 1000;
   const MAX_AMOUNT_CLIENTS = 1000000;
+
+  const MAX_ID_CUSTOMER_SUCCESS = 1000;
+  const MAX_ID_CLIENTS = 1000000;
+
+  const MAX_SCORE_CUSTOMER_SUCCESS = 10000
+  const MAX_SCORE_CUSTOMER = 100000
 
   if(customerSuccess.length > MAX_AMOUNT_CUSTOMER_SUCCESS) {
     throw new Error('Exceeded maximum number of customers!')
@@ -25,48 +35,40 @@ function customerSuccessBalancing(
   if(customers.length > MAX_AMOUNT_CLIENTS) {
     throw new Error('Exceeded maximum number of clients!')
   }
-
+ 
   // verify ids and levels of customers success
-  const customersSuccessExceeded = customerSuccess.find((assignmentSuccessCostumer) => (assignmentSuccessCostumer.score > 10000 || assignmentSuccessCostumer.score < 0) || ((assignmentSuccessCostumer.id > 1000 || assignmentSuccessCostumer.id < 0)))
-
-  if(customersSuccessExceeded) {
+  if(isValidData(customerSuccess, MAX_ID_CUSTOMER_SUCCESS, MAX_SCORE_CUSTOMER_SUCCESS )) {
     throw new Error('Exceeded maximum number of id or level of customers success!')
   }
 
- // verify ids and levels of customers success
-  const customersExceeded = customers.find((costumer) => (costumer.score > 100000 || costumer.score < 0) || ((costumer.id > 1000000 || costumer.id < 0)))
-
-  if(customersExceeded) {
-    throw new Error('Exceeded maximum number of id or level of customers!')
+  if(isValidData(customers, MAX_ID_CLIENTS, MAX_SCORE_CUSTOMER)) {
+    throw new Error('Exceeded maximum number of id or level of customers success!')
   }
 
   // First: Remove customerSuccess away
   const idsAwayToRemove = new Set(customerSuccessAway)
-
   const filteredSuccessCustomerAvailable = customerSuccess.filter(successCostumer => !idsAwayToRemove.has(successCostumer.id))
 
   // order by customer success
-  const orderByFilteredSuccessCustomerAvailable = filteredSuccessCustomerAvailable.sort((firstSuccessCostumer, secondSuccessCostumer) => {
-    if (firstSuccessCostumer.score > secondSuccessCostumer.score) {
-      return 1
-    } else if (
-      firstSuccessCostumer.score < secondSuccessCostumer.score
-    ) {
-      return -1
+  const orderFilteredSuccessCustomerAvailable = filteredSuccessCustomerAvailable.sort((firstSuccessCostumer, secondSuccessCostumer) => {
+    const differenceBetweenScore = firstSuccessCostumer.score - secondSuccessCostumer.score
+
+    if(differenceBetweenScore !== 0) {
+      return differenceBetweenScore
+    } else {
+      throw new Error('Has customer with score similar!')
     }
-  
-    throw new Error('Has customer with score similar!')
   })
 
-  // assignments success costumes with costumes
-  let assignmentsSuccessCostumers = []
+  // enumerate quantity of successful customer with clients
+  let enumerateSuccessCostumers = []
   
   customers.forEach((costumer) => {
-    let idAssignmentSuccessCostumer = null
+    let idEnumerateSuccessCostumer = null
 
-    for(const assignmentSuccessCostumer of orderByFilteredSuccessCustomerAvailable) {
-      if(costumer.score <= assignmentSuccessCostumer.score) {
-        idAssignmentSuccessCostumer = assignmentSuccessCostumer.id
+    for(const filteredSuccessCostumer of orderFilteredSuccessCustomerAvailable) {
+      if(costumer.score <= filteredSuccessCostumer.score) {
+        idEnumerateSuccessCostumer = filteredSuccessCostumer.id
 
         break;
       } else {
@@ -74,47 +76,38 @@ function customerSuccessBalancing(
       }
     }
 
-    if(idAssignmentSuccessCostumer) {
-      const findIndexSuccessCostumer = assignmentsSuccessCostumers.findIndex((assignmentSuccessCostumer) => assignmentSuccessCostumer.id === idAssignmentSuccessCostumer)
+    if(idEnumerateSuccessCostumer) {
+      const findIndexSuccessCostumer = enumerateSuccessCostumers.findIndex((assignmentSuccessCostumer) => assignmentSuccessCostumer.id === idEnumerateSuccessCostumer)
 
       if(findIndexSuccessCostumer >= 0) {
-        const assignmentSuccessCostumerFindIndex = assignmentsSuccessCostumers[findIndexSuccessCostumer]
-
-        const newAssignmentSuccessCostumer = assignmentsSuccessCostumers.map((assignmentSuccessCostumer) => {
-          if(assignmentSuccessCostumer.id === assignmentSuccessCostumerFindIndex.id) {
-            return {
-              ...assignmentSuccessCostumer,
-              amount: assignmentSuccessCostumer.amount + 1
-            }
-          } else {
-            return assignmentSuccessCostumer
-          }
-        })
-
-        assignmentsSuccessCostumers = newAssignmentSuccessCostumer
+        enumerateSuccessCostumers[findIndexSuccessCostumer].amount = enumerateSuccessCostumers[findIndexSuccessCostumer].amount + 1;
       } else {
-        assignmentsSuccessCostumers.push({
-          id: idAssignmentSuccessCostumer,
+        const newEnumerateSuccessCostumer = {
+          id: idEnumerateSuccessCostumer,
           amount: 1
-        })
+        }
+
+        enumerateSuccessCostumers.push(newEnumerateSuccessCostumer)
       }
     }
   })
 
-  // bigger amount success costumer
-  const maxAmountSuccessCostumer = Math.max(...assignmentsSuccessCostumers.map((assignmentSuccessCostumer) => assignmentSuccessCostumer.amount))
+  // bigger amount clients
+  const maxAmountSuccessCostumer = Math.max(...enumerateSuccessCostumers.map((enumerateSuccessCostumer) => enumerateSuccessCostumer.amount))
 
-  // filtered success costumer with bigger amount success costumer
-  const filteredMaxAssignmentsSuccessCostumer = assignmentsSuccessCostumers.filter((assignmentSuccessCostumer) => assignmentSuccessCostumer.amount === maxAmountSuccessCostumer)
+  // filtered success costumer with bigger amount clients
+  const filteredEnumerateSuccessCostumers = enumerateSuccessCostumers.filter((enumerateSuccessCostumer) => enumerateSuccessCostumer.amount === maxAmountSuccessCostumer)
+
+  const MAX_AMOUNT_SUCCESS_COSTUMERS_WITH_CLIENTS = 1
 
   // check if you have more than one customer
-  if(filteredMaxAssignmentsSuccessCostumer.length > 1) {
+  if(filteredEnumerateSuccessCostumers.length > MAX_AMOUNT_SUCCESS_COSTUMERS_WITH_CLIENTS) {
     return 0
   } else {
-     const findAssignmentsSuccessCostumer = assignmentsSuccessCostumers.find((assignmentSuccessCostumer) => assignmentSuccessCostumer.amount === maxAmountSuccessCostumer)
+     const findEnumerateSuccessCostumers = enumerateSuccessCostumers.find((enumerateSuccessCostumer) => enumerateSuccessCostumer.amount === maxAmountSuccessCostumer)
 
-    if(findAssignmentsSuccessCostumer) {
-      return findAssignmentsSuccessCostumer.id
+    if(findEnumerateSuccessCostumers) {
+      return findEnumerateSuccessCostumers.id
     } else {
       return 0
     }
