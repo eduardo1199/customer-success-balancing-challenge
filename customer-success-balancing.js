@@ -43,10 +43,10 @@ function customerSuccessBalancing(
   // First: Remove customerSuccess away
   const idsAwayToRemove = new Set(customerSuccessAway)
 
-  const filteredCustomerSuccessAvailable = customerSuccess.filter(successCostumer => !idsAwayToRemove.has(successCostumer.id))
+  const filteredSuccessCustomerAvailable = customerSuccess.filter(successCostumer => !idsAwayToRemove.has(successCostumer.id))
 
   // order by customer success
-  const orderByFilteredCustomerSuccessAvailable = filteredCustomerSuccessAvailable.sort((firstSuccessCostumer, secondSuccessCostumer) => {
+  const orderByFilteredSuccessCustomerAvailable = filteredSuccessCustomerAvailable.sort((firstSuccessCostumer, secondSuccessCostumer) => {
     if (firstSuccessCostumer.score > secondSuccessCostumer.score) {
       return 1
     } else if (
@@ -64,7 +64,7 @@ function customerSuccessBalancing(
   customers.forEach((costumer) => {
     let idAssignmentSuccessCostumer = null
 
-    for(const assignmentSuccessCostumer of orderByFilteredCustomerSuccessAvailable) {
+    for(const assignmentSuccessCostumer of orderByFilteredSuccessCustomerAvailable) {
       if(costumer.score <= assignmentSuccessCostumer.score) {
         idAssignmentSuccessCostumer = assignmentSuccessCostumer.id
 
@@ -107,7 +107,7 @@ function customerSuccessBalancing(
   // filtered success costumer with bigger amount success costumer
   const filteredMaxAssignmentsSuccessCostumer = assignmentsSuccessCostumers.filter((assignmentSuccessCostumer) => assignmentSuccessCostumer.amount === maxAmountSuccessCostumer)
 
-  // verify if have enough amount success costumer
+  // check if you have more than one customer
   if(filteredMaxAssignmentsSuccessCostumer.length > 1) {
     return 0
   } else {
@@ -129,7 +129,7 @@ test("Scenario 1", () => {
     { id: 4, score: 75 },
   ];
   const customers = [
-    { id: 1, score: 10000000000000 },
+    { id: 1, score: 90 },
     { id: 2, score: 20 },
     { id: 3, score: 70 },
     { id: 4, score: 40 },
