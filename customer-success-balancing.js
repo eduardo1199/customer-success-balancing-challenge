@@ -22,7 +22,7 @@ function customerSuccessBalancing(
     throw new Error('Exceeded maximum number of customers!')
   }
 
-  if(customerSuccess.length > MAX_AMOUNT_CLIENTS) {
+  if(customers.length > MAX_AMOUNT_CLIENTS) {
     throw new Error('Exceeded maximum number of clients!')
   }
 
@@ -34,7 +34,7 @@ function customerSuccessBalancing(
   }
 
  // verify ids and levels of customers success
-  const customersExceeded = customerSuccess.find((assignmentSuccessCostumer) => (assignmentSuccessCostumer.score > 100000 || assignmentSuccessCostumer.score < 0) || ((assignmentSuccessCostumer.id > 1000000 || assignmentSuccessCostumer.id < 0)))
+  const customersExceeded = customers.find((costumer) => (costumer.score > 100000 || costumer.score < 0) || ((costumer.id > 1000000 || costumer.id < 0)))
 
   if(customersExceeded) {
     throw new Error('Exceeded maximum number of id or level of customers!')
@@ -129,7 +129,7 @@ test("Scenario 1", () => {
     { id: 4, score: 75 },
   ];
   const customers = [
-    { id: 1, score: 90 },
+    { id: 1, score: 10000000000000 },
     { id: 2, score: 20 },
     { id: 3, score: 70 },
     { id: 4, score: 40 },
