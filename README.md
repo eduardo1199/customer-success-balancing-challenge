@@ -4,7 +4,7 @@
 No terminal, execute os comandos:
 
 ```bash
-cd javascript
+cd customer-success-balancing-challenge
 yarn
 yarn test
 ```
@@ -12,7 +12,7 @@ yarn test
 Ou usando o NPM:
 
 ```bash
-cd javascript
+cd customer-success-balancing-challenge
 npm install
 npm test
 ```
